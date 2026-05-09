@@ -3,337 +3,294 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>2048 Pro - تجربة حماسية</title>
+    <title>2048 - نظام المستويات</title>
     <style>
         :root {
-            --bg-color: #faf8ef;
-            --grid-color: #bbada0;
-            --cell-color: rgba(238, 228, 218, 0.35);
-            --text-dark: #776e65;
-            --text-light: #f9f6f2;
+            --bg-color: #1a1a2e;
+            --grid-bg: #16213e;
+            --accent: #e94560;
+            --text: #ffffff;
         }
 
         body {
             background-color: var(--bg-color);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text);
+            font-family: 'Segoe UI', system-ui, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100vh;
             margin: 0;
+            height: 100vh;
             overflow: hidden;
             touch-action: none;
         }
 
         .header {
-            width: 90%;
-            max-width: 400px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .title {
-            font-size: 48px;
-            font-weight: bold;
-            color: var(--text-dark);
-            margin: 0;
-        }
-
-        .score-container {
-            background: var(--grid-color);
-            padding: 10px 20px;
-            border-radius: 6px;
-            color: white;
             text-align: center;
-        }
-
-        .score-label { font-size: 13px; text-transform: uppercase; display: block; }
-        .score-value { font-size: 25px; font-weight: bold; }
-
-        .game-container {
-            position: relative;
-            width: 340px;
-            height: 340px;
-            background: var(--grid-color);
-            border-radius: 6px;
-            padding: 15px;
-            box-sizing: border-box;
-            user-select: none;
-        }
-
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            grid-template-rows: repeat(4, 1fr);
-            grid-gap: 15px;
+            padding: 20px;
             width: 100%;
-            height: 100%;
         }
 
-        .grid-cell {
-            width: 100%;
-            height: 100%;
-            background: var(--cell-color);
-            border-radius: 3px;
-        }
-
-        .tile-container {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            right: 15px;
-            bottom: 15px;
-            z-index: 2;
-        }
-
-        .tile {
-            position: absolute;
-            width: 66.25px;
-            height: 66.25px;
-            border-radius: 3px;
+        .stats {
             display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 28px;
-            font-weight: bold;
-            transition: transform 120ms ease-in-out, background-color 100ms ease-in-out;
-            z-index: 10;
-        }
-
-        /* الألوان حسب القيمة */
-        .tile-2 { background: #eee4da; color: #776e65; }
-        .tile-4 { background: #ede0c8; color: #776e65; }
-        .tile-8 { background: #f2b179; color: white; }
-        .tile-16 { background: #f59563; color: white; }
-        .tile-32 { background: #f67c5f; color: white; }
-        .tile-64 { background: #f65e3b; color: white; }
-        .tile-128 { background: #edcf72; color: white; font-size: 24px; box-shadow: 0 0 10px rgba(237, 207, 114, 0.5); }
-        .tile-256 { background: #edcc61; color: white; font-size: 24px; }
-        .tile-512 { background: #edc850; color: white; font-size: 24px; }
-        .tile-1024 { background: #edc53f; color: white; font-size: 20px; }
-        .tile-2048 { background: #edc22e; color: white; font-size: 20px; box-shadow: 0 0 15px rgba(237, 194, 46, 0.8); }
-
-        .tile-new { animation: appear 200ms ease-out; }
-        .tile-merged { animation: pop 200ms ease-in-out; z-index: 20; }
-
-        @keyframes appear {
-            0% { opacity: 0; transform: scale(0); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-
-        @keyframes pop {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.15); }
-            100% { transform: scale(1); }
-        }
-
-        .controls {
-            margin-top: 30px;
-            width: 90%;
+            justify-content: space-around;
+            width: 100%;
             max-width: 400px;
-            display: flex;
-            justify-content: center;
+            margin-bottom: 10px;
         }
 
-        .btn {
-            background: #8f7a66;
+        .stat-box {
+            background: var(--grid-bg);
+            padding: 10px 15px;
+            border-radius: 12px;
+            border: 1px solid var(--accent);
+            min-width: 80px;
+        }
+
+        .difficulty-selector {
+            margin: 15px 0;
+            display: flex;
+            gap: 10px;
+        }
+
+        .diff-btn {
+            background: #0f3460;
             color: white;
             border: none;
-            padding: 10px 25px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 5px;
+            padding: 8px 15px;
+            border-radius: 20px;
             cursor: pointer;
             transition: 0.3s;
         }
 
-        .btn:hover { background: #7f6a56; }
+        .diff-btn.active {
+            background: var(--accent);
+            box-shadow: 0 0 10px var(--accent);
+        }
 
-        .overlay {
+        .game-board {
+            position: relative;
+            width: 350px;
+            height: 350px;
+            background: var(--grid-bg);
+            border-radius: 15px;
+            padding: 10px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .tile {
+            width: 100%;
+            height: 100%;
+            background: #0f3460;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 22px;
+            font-weight: bold;
+            transition: all 0.15s ease;
+            animation: popIn 0.3s ease-out;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* تدرج الألوان الملحمي */
+        .v-2 { background: #4ecca3; color: #1a1a2e; }
+        .v-4 { background: #45b7d1; }
+        .v-8 { background: #3498db; }
+        .v-16 { background: #9b59b6; }
+        .v-32 { background: #f1c40f; color: #1a1a2e; }
+        .v-64 { background: #e67e22; }
+        .v-128 { background: #e74c3c; box-shadow: 0 0 15px #e74c3c; }
+        .v-256 { background: #ff0055; animation: pulse 1s infinite; }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .controls-hint {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #888;
+        }
+
+        .game-over {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(238, 228, 218, 0.7);
-            z-index: 100;
-            display: flex;
+            background: rgba(26, 26, 46, 0.9);
+            display: none;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            display: none;
+            z-index: 100;
+            border-radius: 15px;
         }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1 class="title">2048</h1>
-        <div class="score-container">
-            <span class="score-label">السكور</span>
-            <span id="score" class="score-value">0</span>
-        </div>
-    </div>
-
-    <div class="game-container" id="game-container">
-        <div class="grid-container">
-            <!-- 16 Cells -->
-            <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
-            <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
-            <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
-            <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
-        </div>
-        <div class="tile-container" id="tile-container"></div>
+        <h1>2048: التحدي الكامل</h1>
         
-        <div class="overlay" id="game-over">
-            <h2 style="font-size: 40px; color: #776e65;">Game Over!</h2>
-            <button class="btn" onclick="initGame()">حاول مرة أخرى</button>
+        <div class="difficulty-selector">
+            <button class="diff-btn active" onclick="setDiff('easy', this)">سهل</button>
+            <button class="diff-btn" onclick="setDiff('medium', this)">متوسط</button>
+            <button class="diff-btn" onclick="setDiff('hard', this)">صعب</button>
+        </div>
+
+        <div class="stats">
+            <div class="stat-box">السكور: <span id="score">0</span></div>
+            <div class="stat-box">المستوى: <span id="level-name">سهل</span></div>
         </div>
     </div>
 
-    <div class="controls">
-        <button class="btn" onclick="initGame()">لعبة جديدة</button>
+    <div class="game-board" id="board">
+        <div class="game-over" id="gameOver">
+            <h2>انتهت اللعبة!</h2>
+            <button class="diff-btn active" onclick="resetGame()">إعادة المحاولة</button>
+        </div>
     </div>
+
+    <div class="controls-hint">اسحب للدمج وتفريغ المساحة!</div>
 
     <script>
-        const container = document.getElementById('tile-container');
-        const scoreDisplay = document.getElementById('score');
-        const gameOverOverlay = document.getElementById('game-over');
-        let board = [];
         let score = 0;
+        let difficulty = 'easy';
+        let grid = [];
         const size = 4;
+        const boardElement = document.getElementById('board');
 
-        function initGame() {
-            board = Array(size * size).fill(0);
+        const diffSettings = {
+            easy: { startTiles: 8, maxInit: 4, name: "سهل" },
+            medium: { startTiles: 12, maxInit: 8, name: "متوسط" },
+            hard: { startTiles: 16, maxInit: 16, name: "صعب (ممتلئ)" }
+        };
+
+        function setDiff(level, btn) {
+            difficulty = level;
+            document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('level-name').innerText = diffSettings[level].name;
+            resetGame();
+        }
+
+        function resetGame() {
             score = 0;
-            scoreDisplay.innerText = score;
-            gameOverOverlay.style.display = 'none';
-            container.innerHTML = '';
-            addRandomTile();
-            addRandomTile();
-            drawBoard();
+            document.getElementById('score').innerText = score;
+            document.getElementById('gameOver').style.display = 'none';
+            initBoard();
         }
 
-        function addRandomTile() {
-            let emptyCells = board.map((val, idx) => val === 0 ? idx : null).filter(val => val !== null);
-            if (emptyCells.length > 0) {
-                let randomCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
-                board[randomCell] = Math.random() < 0.9 ? 2 : 4;
+        function initBoard() {
+            grid = Array(size * size).fill(0);
+            const settings = diffSettings[difficulty];
+            
+            // ملء المربعات حسب مستوى الصعوبة
+            let positions = Array.from({length: 16}, (_, i) => i);
+            positions.sort(() => Math.random() - 0.5);
+
+            for(let i = 0; i < settings.startTiles; i++) {
+                grid[positions[i]] = Math.random() > 0.5 ? 2 : 4;
             }
+            render();
         }
 
-        function drawBoard() {
-            container.innerHTML = '';
-            board.forEach((val, i) => {
-                if (val !== 0) {
-                    const tile = document.createElement('div');
-                    tile.className = `tile tile-${val} tile-new`;
-                    tile.innerText = val;
-                    
-                    const row = Math.floor(i / size);
-                    const col = i % size;
-                    
-                    // حساب الموقع (اليسار هو 0 في LTR، لذا نحتاج للانتباه في RTL)
-                    // في CSS هنا استخدمنا left كإزاحة ثابتة
-                    tile.style.transform = `translate(${col * 81.25}px, ${row * 81.25}px)`;
-                    container.appendChild(tile);
-                }
+        function render() {
+            // مسح المربعات القديمة مع الحفاظ على الأوفرلاي
+            const tiles = boardElement.querySelectorAll('.tile');
+            tiles.forEach(t => t.remove());
+
+            grid.forEach((val, idx) => {
+                const tileDiv = document.createElement('div');
+                tileDiv.className = `tile ${val ? 'v-' + val : ''}`;
+                tileDiv.innerText = val || '';
+                boardElement.appendChild(tileDiv);
             });
         }
 
-        function move(direction) {
+        function move(dir) {
             let moved = false;
-            let newBoard = [...board];
+            // منطق الحركة المبسط للسرعة
+            // (بما أنك طلبت "تزوج فيهم"، المنطق هنا يدمج الأرقام المتشابهة)
+            
+            let prevGrid = [...grid];
 
-            const getIndex = (r, c) => r * size + c;
+            // تحريك ودمج (منطق صلب)
+            for (let i = 0; i < size; i++) {
+                let line = [];
+                for (let j = 0; j < size; j++) {
+                    let idx = (dir === 'UP' || dir === 'DOWN') ? (j * size + i) : (i * size + j);
+                    line.push(grid[idx]);
+                }
 
-            if (direction === 'UP' || direction === 'DOWN') {
-                for (let c = 0; c < size; c++) {
-                    let column = [board[getIndex(0, c)], board[getIndex(1, c)], board[getIndex(2, c)], board[getIndex(3, c)]];
-                    let filtered = column.filter(v => v !== 0);
-                    if (direction === 'DOWN') filtered.reverse();
-                    
-                    for (let i = 0; i < filtered.length - 1; i++) {
-                        if (filtered[i] === filtered[i+1]) {
-                            filtered[i] *= 2;
-                            score += filtered[i];
-                            filtered.splice(i+1, 1);
-                            moved = true;
-                        }
-                    }
-                    
-                    while (filtered.length < size) filtered.push(0);
-                    if (direction === 'DOWN') filtered.reverse();
-                    
-                    for (let r = 0; r < size; r++) {
-                        if (board[getIndex(r, c)] !== filtered[r]) moved = true;
-                        newBoard[getIndex(r, c)] = filtered[r];
+                if (dir === 'DOWN' || dir === 'LEFT') line.reverse();
+
+                let newLine = line.filter(v => v !== 0);
+                for (let k = 0; k < newLine.length - 1; k++) {
+                    if (newLine[k] === newLine[k+1]) {
+                        newLine[k] *= 2;
+                        score += newLine[k];
+                        newLine.splice(k+1, 1);
+                        newLine.push(0);
+                        moved = true;
                     }
                 }
-            } else {
-                for (let r = 0; r < size; r++) {
-                    let row = [board[getIndex(r, 0)], board[getIndex(r, 1)], board[getIndex(r, 2)], board[getIndex(r, 3)]];
-                    let filtered = row.filter(v => v !== 0);
-                    if (direction === 'LEFT') filtered.reverse(); // عكس المنطق ليتناسب مع RTL
-                    
-                    for (let i = 0; i < filtered.length - 1; i++) {
-                        if (filtered[i] === filtered[i+1]) {
-                            filtered[i] *= 2;
-                            score += filtered[i];
-                            filtered.splice(i+1, 1);
-                            moved = true;
-                        }
-                    }
-                    
-                    while (filtered.length < size) filtered.push(0);
-                    if (direction === 'LEFT') filtered.reverse();
-                    
-                    for (let c = 0; c < size; c++) {
-                        if (board[getIndex(r, c)] !== filtered[c]) moved = true;
-                        newBoard[getIndex(r, c)] = filtered[c];
-                    }
+                while (newLine.length < size) newLine.push(0);
+                if (dir === 'DOWN' || dir === 'LEFT') newLine.reverse();
+
+                for (let j = 0; j < size; j++) {
+                    let idx = (dir === 'UP' || dir === 'DOWN') ? (j * size + i) : (i * size + j);
+                    grid[idx] = newLine[j];
                 }
             }
 
-            if (moved) {
-                board = newBoard;
+            if (JSON.stringify(prevGrid) !== JSON.stringify(grid)) {
+                // إضافة رقم جديد دائماً لجعل اللعبة "حماسية" وممتلئة
                 addRandomTile();
-                scoreDisplay.innerText = score;
-                drawBoard();
-                if (checkGameOver()) gameOverOverlay.style.display = 'flex';
+                render();
+                document.getElementById('score').innerText = score;
+                checkStatus();
             }
         }
 
-        function checkGameOver() {
-            if (board.includes(0)) return false;
-            for (let r = 0; r < size; r++) {
-                for (let c = 0; c < size; c++) {
-                    let curr = board[r * size + c];
-                    if (c < size - 1 && curr === board[r * size + (c + 1)]) return false;
-                    if (r < size - 1 && curr === board[(r + 1) * size + c]) return false;
+        function addRandomTile() {
+            let empty = grid.map((v, i) => v === 0 ? i : null).filter(v => v !== null);
+            if (empty.length > 0) {
+                let loc = empty[Math.floor(Math.random() * empty.length)];
+                // في المستوى الصعب، تظهر أرقام أكبر فجأة
+                let values = difficulty === 'hard' ? [2, 4, 8] : [2, 4];
+                grid[loc] = values[Math.floor(Math.random() * values.length)];
+            }
+        }
+
+        function checkStatus() {
+            if (!grid.includes(0)) {
+                // تحقق إذا كان هناك أي دمج ممكن
+                let canMove = false;
+                for(let i=0; i<16; i++) {
+                    if ((i%4 < 3 && grid[i] === grid[i+1]) || (i < 12 && grid[i] === grid[i+4])) {
+                        canMove = true; break;
+                    }
                 }
+                if (!canMove) document.getElementById('gameOver').style.display = 'flex';
             }
-            return true;
         }
 
-        // التحكم بالكيبورد
-        window.addEventListener('keydown', e => {
-            if (e.key === 'ArrowUp') move('UP');
-            if (e.key === 'ArrowDown') move('DOWN');
-            if (e.key === 'ArrowLeft') move('RIGHT'); // معكوس للـ RTL
-            if (e.key === 'ArrowRight') move('LEFT');
-        });
-
-        // التحكم باللمس (Swipe)
-        let touchStartX, touchStartY;
-        document.addEventListener('touchstart', e => {
-            touchStartX = e.touches[0].clientX;
-            touchStartY = e.touches[0].clientY;
-        });
-
+        // اللمس
+        let tsX, tsY;
+        document.addEventListener('touchstart', e => { tsX = e.touches[0].clientX; tsY = e.touches[0].clientY; });
         document.addEventListener('touchend', e => {
-            let dx = e.changedTouches[0].clientX - touchStartX;
-            let dy = e.changedTouches[0].clientY - touchStartY;
+            let dx = e.changedTouches[0].clientX - tsX;
+            let dy = e.changedTouches[0].clientY - tsY;
             if (Math.abs(dx) > Math.abs(dy)) {
                 if (Math.abs(dx) > 30) move(dx > 0 ? 'LEFT' : 'RIGHT');
             } else {
@@ -341,7 +298,15 @@
             }
         });
 
-        initGame();
+        // الكيبورد
+        document.addEventListener('keydown', e => {
+            if(e.key === 'ArrowUp') move('UP');
+            if(e.key === 'ArrowDown') move('DOWN');
+            if(e.key === 'ArrowLeft') move('RIGHT');
+            if(e.key === 'ArrowRight') move('LEFT');
+        });
+
+        resetGame();
     </script>
 </body>
 </html>
